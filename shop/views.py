@@ -182,6 +182,23 @@ def loggedin_contact(request):
         return render(request, 'loggedin_contact.html', {'alert':alert})
     return render(request, "loggedin_contact.html", {'cartItems':cartItems})
 
+def profile(request):
+    if not request.user.is_authenticated:
+        return redirect('/login')
+    from pprint import pprint
+    print(request)
+    data = cartData(request)
+    items = data['items']
+    order = data['order']
+    cartItems = data['cartItems']
+    if request.method == "POST":
+        order_id = request.POST['order_id']
+        order = Order.objects.filter(id=order_id).first()
+        order_items = OrderItem.objects.filter(order=order)
+        update_order = UpdateOrder.objects.filter(order_id=order_id)
+        print(update_order)
+        return render(request, "profile.html", {'order_items':order_items, 'update_order':update_order})
+    return render(request, "profile.html", {'cartItems':cartItems})
 def tracker(request):
     if not request.user.is_authenticated:
         return redirect('/login')
